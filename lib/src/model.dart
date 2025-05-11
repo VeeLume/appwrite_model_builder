@@ -4,22 +4,38 @@ import 'package:appwrite_model_builder/src/collection_parser/collection_info.dar
 import 'package:code_builder/code_builder.dart';
 
 String moduleName(String className) {
-  return className
+
+  final s =
+      className
       .replaceAllMapped(
         RegExp(r'([a-z])([A-Z])'),
         (match) => '${match.group(1)}_${match.group(2)}',
       )
       .toLowerCase();
+
+  return s;
 }
 
 String toSingularPascalCase(String input) {
-  final words = input.split('_').where((w) => w.isNotEmpty).toList();
+  // Split the input string into words
+  // Split by underscores, hayphens and uppercase letters
+  final words =
+      input
+          .replaceAll(RegExp(r'[_-]'), ' ')
+          .replaceAllMapped(
+            RegExp(r'([a-z])([A-Z])'),
+            (match) => '${match.group(1)} ${match.group(2)}',
+          )
+          .split(' ')
+          .map((word) => word.trim())
+          .where((word) => word.isNotEmpty)
+          .toList();
+
   if (words.isEmpty) return '';
 
   // Plural handling for the last word
   final last = words.removeLast();
   final singular = _toSingular(last);
-
   final pascalWords = [...words.map(_capitalize), _capitalize(singular)];
 
   return pascalWords.join();
