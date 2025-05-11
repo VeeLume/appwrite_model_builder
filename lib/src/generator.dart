@@ -34,16 +34,15 @@ List<(String, String)> generateModels(
 
     final lib = Library((lib) {
       lib.body.addAll([
-        if (collectionInfo.attributes.any((e) => e.array))
-          Field((b) {
-            b.name = '_eq';
-            b.modifier = FieldModifier.final$;
-            b.assignment =
-                refer(
-                  'ListEquality',
-                  'package:collection/collection.dart',
-                ).constInstance([]).property('equals').code;
-          }),
+        Field((b) {
+          b.name = '_eq';
+          b.modifier = FieldModifier.final$;
+          b.assignment =
+              refer(
+                'ListEquality',
+                'package:collection/collection.dart',
+              ).constInstance([]).property('equals').code;
+        }),
         Field((b) {
           b.name = '_hash';
           b.modifier = FieldModifier.final$;

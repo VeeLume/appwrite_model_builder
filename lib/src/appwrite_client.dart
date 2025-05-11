@@ -352,6 +352,13 @@ Method createMethod(String packageName) => Method(
                   ..named = true
                   ..type = refer('RelationContext?', 'package:$packageName/models/collections.dart')
           ),
+          Parameter(
+            (b) =>
+                b
+                  ..name = 'permissions'
+                  ..named = true
+                  ..type = refer('List<String>?'),
+          ),
         ])
         ..body = Code('''
     try {
@@ -360,7 +367,7 @@ Method createMethod(String packageName) => Method(
         collectionId: collectionId,
         documentId: model.\$id,
         data: model.toAppwrite(context: context),
-        permissions: model.\$permissions,
+        permissions: permissions,
       );
       return Success(fromAppwrite(response));
     } on AppwriteException catch (e) {
@@ -416,6 +423,13 @@ Method updateMethod(String packageName)  => Method(
                   ..named = true
                   ..type = refer('RelationContext?', 'package:$packageName/models/collections.dart')
           ),
+          Parameter(
+            (b) =>
+                b
+                  ..name = 'permissions'
+                  ..named = true
+                  ..type = refer('List<String>?'),
+          ),
         ])
         ..body = Code('''
     try {
@@ -424,7 +438,7 @@ Method updateMethod(String packageName)  => Method(
         collectionId: collectionId,
         documentId: model.\$id,
         data: model.toAppwrite(context: context),
-        permissions: model.\$permissions,
+        permissions: permissions,
       );
       return Success(fromAppwrite(response));
     } on AppwriteException catch (e) {

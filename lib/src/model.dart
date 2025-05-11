@@ -110,7 +110,6 @@ Class model(CollectionInfo collectionInfo, String packageName) {
     for (final attribute in attributes) {
       b.fields.addAll(attribute.fields);
     }
-
     // private constructor
     b.constructors.add(
       Constructor((b) {
@@ -685,6 +684,9 @@ Class model(CollectionInfo collectionInfo, String packageName) {
         fromAppwrite: $className.fromAppwrite,
         model: this,
         context: context,
+        permissions: _eq(\$permissions, collectionInfo.\$permissions)
+          ? null
+          : \$permissions,
       )
   '''),
       ),
@@ -737,6 +739,9 @@ Class model(CollectionInfo collectionInfo, String packageName) {
         fromAppwrite: $className.fromAppwrite,
         model: this,
         context: context,
+        permissions: _eq(\$permissions, collectionInfo.\$permissions)
+          ? null
+          : \$permissions,
       )
   '''),
       ),
