@@ -24,6 +24,33 @@ class AttributeInfoEnum extends AttributeInfo {
           : Code("'$name': $name.name");
 
   @override
+  Expression get toAppwrite =>
+      array
+          ? refer('data')
+              .index(literalString(name))
+              .assign(
+                refer(name)
+                    .property('map')
+                    .call([
+                      Method(
+                        (b) =>
+                            b
+                              ..lambda = true
+                              ..requiredParameters.add(
+                                Parameter((p) => p..name = 'e'),
+                              )
+                              ..body = refer('e').property('name').code,
+                      ).closure,
+                    ])
+                    .property('toList')
+                    .call([]),
+              )
+          : refer(
+            'data',
+          ).index(literalString(name)).assign(refer(name).property('name'));
+
+
+  @override
   Expression get fromAppwrite =>
       array
           ? TypeReference(

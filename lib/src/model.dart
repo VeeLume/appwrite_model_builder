@@ -344,7 +344,7 @@ Class model(CollectionInfo collectionInfo, String packageName) {
           for (final attribute in attributes.where(
             (a) => a is! AttributeInfoRelation,
           ))
-            Code('data[\'${attribute.name}\'] = ${attribute.name};'),
+            attribute.toAppwrite.statement,
           Code('}'),
           for (final attribute
               in attributes.whereType<AttributeInfoRelation>()) ...[

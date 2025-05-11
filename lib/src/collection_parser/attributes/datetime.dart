@@ -14,6 +14,33 @@ class AttributeInfoDateTime extends AttributeInfo {
           : Code("'$name': $name${required ? '' : '?'}.toIso8601String()");
 
   @override
+  Expression get toAppwrite =>
+      array
+          ? refer('data')
+              .index(literalString(name))
+              .assign(
+                refer(name)
+                    .property('map')
+                    .call([
+                      Method(
+                        (b) =>
+                            b
+                              ..lambda = true
+                              ..requiredParameters.add(
+                                Parameter((p) => p..name = 'e'),
+                              )
+                              ..body =
+                                  refer('e').property('toIso8601String').code,
+                      ).closure,
+                    ])
+                    .property('toList')
+                    .call([]),
+              )
+          : refer('data')
+              .index(literalString(name))
+              .assign(refer(name).property('toIso8601String'));
+
+  @override
   Expression get fromAppwrite =>
       array
           ? TypeReference(

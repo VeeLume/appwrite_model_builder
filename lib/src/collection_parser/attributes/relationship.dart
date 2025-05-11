@@ -114,6 +114,27 @@ class AttributeInfoRelation extends AttributeInfo {
   }
 
   @override
+  Expression get toAppwrite {
+    if (isTypeSingle(relationType, side)) {
+      return refer('data')
+          .index(literalString(name))
+          .assign(refer(name).property('toAppwrite'));
+    } else {
+      return refer('data')
+          .index(literalString(name))
+          .assign(refer(name).property('map').call([
+            Method(
+              (b) =>
+                  b
+                    ..lambda = true
+                    ..requiredParameters.add(Parameter((p) => p..name = 'e'))
+                    ..body = refer('e').property('toAppwrite').code,
+            ).closure,
+          ]).property('toList').call([]));
+    }
+  }
+
+  @override
   Expression get fromAppwrite {
     if (isTypeSingle(relationType, side)) {
       return required

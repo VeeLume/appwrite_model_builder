@@ -73,6 +73,8 @@ class AttributeInfo {
   });
 
   Code get toJson => Code("'$name': $name");
+  Expression get toAppwrite =>
+      refer('data').index(literalString(name)).assign(refer(name));
 
   Expression get fromAppwrite {
     if (array) {
