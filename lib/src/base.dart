@@ -205,7 +205,7 @@ Class baseModel(String packageName) {
         (m) =>
             m
               ..name = 'toAppwrite'
-              ..optionalParameters.add(
+              ..optionalParameters.addAll([
                 Parameter(
                   (b) =>
                       b
@@ -216,7 +216,15 @@ Class baseModel(String packageName) {
                           'package:$packageName/models/collections.dart',
                         ),
                 ),
-              )
+                Parameter(
+                  (b) =>
+                      b
+                        ..name = 'includeId'
+                        ..named = true
+                        ..defaultTo = Code('true')
+                        ..type = refer('bool'),
+                ),
+              ])
               ..returns = refer('dynamic'),
       ),
     ]);

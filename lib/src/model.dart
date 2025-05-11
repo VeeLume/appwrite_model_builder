@@ -66,9 +66,7 @@ String _toSingular(String plural) {
 }
 
 Class model(CollectionInfo collectionInfo, String packageName) {
-  print('Generating model for ${collectionInfo.name}');
   final className = collectionInfo.name;
-  print('Generating model for $className');
   final attributes = collectionInfo.attributes;
 
   return Class((b) {
@@ -322,7 +320,7 @@ Class model(CollectionInfo collectionInfo, String packageName) {
         b.name = 'toAppwrite';
         b.returns = refer('Map<String, dynamic>');
         b.annotations.add(refer('override'));
-        b.optionalParameters.add(
+        b.optionalParameters.addAll([
           Parameter(
             (b) =>
                 b
@@ -333,13 +331,23 @@ Class model(CollectionInfo collectionInfo, String packageName) {
                   )
                   ..named = true,
           ),
-        );
+          Parameter(
+            (b) =>
+                b
+                  ..name = 'includeId'
+                  ..type = refer('bool')
+                  ..defaultTo = Code('true')
+                  ..named = true,
+          ),
+        ]);
         b.body = Block.of([
           declareFinal(
             'data',
             type: refer('Map<String, dynamic>'),
           ).assign(literalMap({})).statement,
-          Code('if (context?.includeId ?? true) data[\'\\\$id\'] = \$id;'),
+          Code(
+            'if (includeId && (context?.includeId ?? true)) data[\'\\\$id\'] = \$id;',
+          ),
           Code('if (context?.includeData ?? true) {'),
           for (final attribute in attributes.where(
             (a) => a is! AttributeInfoRelation,
