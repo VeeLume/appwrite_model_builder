@@ -365,7 +365,6 @@ Method createMethod(String packageName) => Method(
       final response = await databases.createDocument(
         databaseId: databaseId,
         collectionId: collectionId,
-        documentId: model.\$id,
         data: model.toAppwrite(context: context),
         permissions: permissions,
       );
