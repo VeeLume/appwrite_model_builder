@@ -105,7 +105,7 @@ Method pageMethod() => Method(
         ..name = 'page'
         ..types.add(refer('T extends AppwriteModel<T>'))
         ..modifier = MethodModifier.async
-        ..returns = refer('Future<Result<(int, List<T>), String>>')
+        ..returns = refer('Future<Result<(int, List<T>), AppwriteException>>')
         ..optionalParameters.addAll([
           Parameter(
             (b) =>
@@ -180,7 +180,7 @@ Method pageMethod() => Method(
         response.documents.map((e) => fromAppwrite(e)).toList(),
       ));
     } on AppwriteException catch (e) {
-      return Failure(e.message ?? 'Unable to list documents');
+      return Failure(e);
     }
   '''),
 );
@@ -191,7 +191,7 @@ Method listMethod() => Method(
         ..name = 'list'
         ..types.add(refer('T extends AppwriteModel<T>'))
         ..modifier = MethodModifier.async
-        ..returns = refer('Future<Result<(int, List<T>), String>>')
+        ..returns = refer('Future<Result<(int, List<T>), AppwriteException>>')
         ..optionalParameters.addAll([
           Parameter(
             (b) =>
@@ -237,7 +237,7 @@ Method listMethod() => Method(
         response.documents.map((e) => fromAppwrite(e)).toList(),
       ));
     } on AppwriteException catch (e) {
-      return Failure(e.message ?? 'Unable to list documents');
+      return Failure(e);
     }
   '''),
 );
@@ -248,7 +248,7 @@ Method getMethod() => Method(
         ..name = 'get'
         ..types.add(refer('T extends AppwriteModel<T>'))
         ..modifier = MethodModifier.async
-        ..returns = refer('Future<Result<T, String>>')
+        ..returns = refer('Future<Result<T, AppwriteException>>')
         ..optionalParameters.addAll([
           Parameter(
             (b) =>
@@ -300,7 +300,7 @@ Method getMethod() => Method(
       );
       return Success(fromAppwrite(response));
     } on AppwriteException catch (e) {
-      return Failure(e.message ?? 'Unable to get document');
+      return Failure(e);
     }
   '''),
 );
@@ -311,7 +311,7 @@ Method createMethod(String packageName) => Method(
         ..name = 'create'
         ..types.add(refer('T extends AppwriteModel<T>'))
         ..modifier = MethodModifier.async
-        ..returns = refer('Future<Result<T, String>>')
+        ..returns = refer('Future<Result<T, AppwriteException>>')
         ..optionalParameters.addAll([
           Parameter(
             (b) =>
@@ -364,7 +364,7 @@ Method createMethod(String packageName) => Method(
       );
       return Success(fromAppwrite(response));
     } on AppwriteException catch (e) {
-      return Failure(e.message ?? 'Unable to create document');
+      return Failure(e);
     }
   '''),
 );
@@ -375,7 +375,7 @@ Method updateMethod(String packageName)  => Method(
         ..name = 'update'
         ..types.add(refer('T extends AppwriteModel<T>'))
         ..modifier = MethodModifier.async
-        ..returns = refer('Future<Result<T, String>>')
+        ..returns = refer('Future<Result<T, AppwriteException>>')
         ..optionalParameters.addAll([
           Parameter(
             (b) =>
@@ -428,7 +428,7 @@ Method updateMethod(String packageName)  => Method(
       );
       return Success(fromAppwrite(response));
     } on AppwriteException catch (e) {
-      return Failure(e.message ?? 'Unable to update document');
+      return Failure(e);
     }
   '''),
 );
@@ -438,7 +438,7 @@ Method deleteMethod() => Method(
       b
         ..name = 'delete'
         ..modifier = MethodModifier.async
-        ..returns = refer('Future<Result<void, String>>')
+        ..returns = refer('Future<Result<void, AppwriteException>>')
         ..optionalParameters.addAll([
           Parameter(
             (b) =>
@@ -474,7 +474,7 @@ Method deleteMethod() => Method(
       );
       return Success(null);
     } on AppwriteException catch (e) {
-      return Failure(e.message ?? 'Unable to delete document');
+      return Failure(e);
     }
   '''),
 );

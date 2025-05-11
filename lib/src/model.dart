@@ -2,7 +2,6 @@ import 'package:appwrite_model_builder/src/collection_parser/attribute_info.dart
 import 'package:appwrite_model_builder/src/collection_parser/attributes/relationship.dart';
 import 'package:appwrite_model_builder/src/collection_parser/collection_info.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:dart_helper_utils/dart_helper_utils.dart';
 
 String moduleName(String className) {
   return className
@@ -13,23 +12,47 @@ String moduleName(String className) {
       .toLowerCase();
 }
 
-/// Generate the name for the class
-/// The first letter of the class name is capitalized
-/// underscores are removed and the next letter is capitalized
-/// and the rest of the string is lower case
-/// trailing s are removed
-String generateClassName(String className) {
-  return className
-      .replaceAllMapped(
-        RegExp(r'([a-z])([A-Z])'),
-        (match) => '${match.group(1)}${match.group(2)?.capitalizeFirstLetter}',
-      )
-      .replaceAll(RegExp(r's$'), '')
-      .capitalizeFirstLetter;
+String toSingularPascalCase(String input) {
+  final words = input.split('_').where((w) => w.isNotEmpty).toList();
+  if (words.isEmpty) return '';
+
+  // Plural handling for the last word
+  final last = words.removeLast();
+  final singular = _toSingular(last);
+
+  final pascalWords = [...words.map(_capitalize), _capitalize(singular)];
+
+  return pascalWords.join();
+}
+
+String _capitalize(String word) =>
+    word[0].toUpperCase() + word.substring(1).toLowerCase();
+
+String _toSingular(String plural) {
+  if (plural.endsWith('ies') && plural.length > 3) {
+    return '${plural.substring(0, plural.length - 3)}y';
+  }
+  if (plural.endsWith('ses') ||
+      plural.endsWith('xes') ||
+      plural.endsWith('zes')) {
+    return plural.substring(0, plural.length - 2);
+  }
+  if (plural.endsWith('s') && plural.length > 1) {
+    // Dictonary exceptions
+    final exceptions = ['status', 'species'];
+    if (exceptions.contains(plural)) {
+      return plural;
+    }
+
+    return plural.substring(0, plural.length - 1);
+  }
+  return plural;
 }
 
 Class model(CollectionInfo collectionInfo, String packageName) {
-  final className = generateClassName(collectionInfo.name);
+  print('Generating model for ${collectionInfo.name}');
+  final className = collectionInfo.name;
+  print('Generating model for $className');
   final attributes = collectionInfo.attributes;
 
   return Class((b) {
@@ -432,8 +455,11 @@ Class model(CollectionInfo collectionInfo, String packageName) {
                                             ),
                                           ]),
                                   ),
-                                  // Second type: String
-                                  refer('String'),
+                                  // Second type: AppwriteException
+                                  refer(
+                                    'AppwriteException',
+                                    'package:appwrite/appwrite.dart',
+                                  ),
                                 ]),
                         ),
                       ),
@@ -513,8 +539,11 @@ Class model(CollectionInfo collectionInfo, String packageName) {
                                             ),
                                           ]),
                                   ),
-                                  // Second type: String
-                                  refer('String'),
+                                  // Second type: AppwriteException
+                                  refer(
+                                    'AppwriteException',
+                                    'package:appwrite/appwrite.dart',
+                                  ),
                                 ]),
                         ),
                       ),
@@ -555,7 +584,10 @@ Class model(CollectionInfo collectionInfo, String packageName) {
                                 ..url = 'package:result_type/result_type.dart'
                                 ..types.addAll([
                                   refer(className),
-                                  refer('String'),
+                                  refer(
+                                    'AppwriteException',
+                                    'package:appwrite/appwrite.dart',
+                                  ),
                                 ]),
                         ),
                       ),
@@ -605,7 +637,10 @@ Class model(CollectionInfo collectionInfo, String packageName) {
                                 ..url = 'package:result_type/result_type.dart'
                                 ..types.addAll([
                                   refer(className),
-                                  refer('String'),
+                                  refer(
+                                    'AppwriteException',
+                                    'package:appwrite/appwrite.dart',
+                                  ),
                                 ]),
                         ),
                       ),
@@ -654,7 +689,10 @@ Class model(CollectionInfo collectionInfo, String packageName) {
                                 ..url = 'package:result_type/result_type.dart'
                                 ..types.addAll([
                                   refer(className),
-                                  refer('String'),
+                                  refer(
+                                    'AppwriteException',
+                                    'package:appwrite/appwrite.dart',
+                                  ),
                                 ]),
                         ),
                       ),
@@ -703,7 +741,10 @@ Class model(CollectionInfo collectionInfo, String packageName) {
                                 ..url = 'package:result_type/result_type.dart'
                                 ..types.addAll([
                                   refer('void'),
-                                  refer('String'),
+                                  refer(
+                                    'AppwriteException',
+                                    'package:appwrite/appwrite.dart',
+                                  ),
                                 ]),
                         ),
                       ),

@@ -19,7 +19,7 @@ List<(String, String)> generateModels(
     <String, String>{},
     (map, collection) =>
         map
-          ..[collection['\$id'] as String] = generateClassName(
+          ..[collection['\$id'] as String] = toSingularPascalCase(
             collection['name'] as String,
           ),
   );

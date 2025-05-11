@@ -14,11 +14,8 @@ class AttributeInfoEnum extends AttributeInfo {
   });
 
   @override
-  String get name => generateClassName(raw.key);
-
-  @override
   Reference get typeReference =>
-      refer('${classReference.symbol}$name');
+      refer('${classReference.symbol}${toSingularPascalCase(raw.key)}');
 
   @override
   Code get toJson =>
