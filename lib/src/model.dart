@@ -13,8 +13,23 @@ String moduleName(String className) {
       .toLowerCase();
 }
 
+/// Generate the name for the class
+/// The first letter of the class name is capitalized
+/// underscores are removed and the next letter is capitalized
+/// and the rest of the string is lower case
+/// trailing s are removed
+String generateClassName(String className) {
+  return className
+      .replaceAllMapped(
+        RegExp(r'([a-z])([A-Z])'),
+        (match) => '${match.group(1)}${match.group(2)?.capitalizeFirstLetter}',
+      )
+      .replaceAll(RegExp(r's$'), '')
+      .capitalizeFirstLetter;
+}
+
 Class model(CollectionInfo collectionInfo, String packageName) {
-  final className = collectionInfo.name.capitalizeFirstLetter;
+  final className = generateClassName(collectionInfo.name);
   final attributes = collectionInfo.attributes;
 
   return Class((b) {

@@ -39,7 +39,7 @@ class CollectionInfo {
       $id: map['\$id'],
       $permissions: List.unmodifiable(map['\$permissions']),
       databaseId: map['databaseId'],
-      name: map['name'],
+      name: generateClassName(map['name']),
       enabled: map['enabled'],
       documentSecurity: map['documentSecurity'],
       attributes:
@@ -47,7 +47,11 @@ class CollectionInfo {
               .map(
                 (e) => resolveAttributeInfo(
                   e as Map<String, dynamic>,
-                  refer((map['name'] as String).capitalizeFirstLetter),
+                  refer(
+                    (generateClassName(
+                      map['name'] as String,
+                    )).capitalizeFirstLetter,
+                  ),
                   collectionIdToName,
                   packageName,
                 ),

@@ -18,7 +18,10 @@ List<(String, String)> generateModels(
   final Map<String, String> collectionIdToName = collections.fold(
     <String, String>{},
     (map, collection) =>
-        map..[collection['\$id'] as String] = collection['name'] as String,
+        map
+          ..[collection['\$id'] as String] = generateClassName(
+            collection['name'] as String,
+          ),
   );
 
   final List<(String, String)> models = [];

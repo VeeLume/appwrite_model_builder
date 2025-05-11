@@ -1,6 +1,6 @@
 import 'package:appwrite_model_builder/src/collection_parser/attribute_info.dart';
+import 'package:appwrite_model_builder/src/model.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:dart_helper_utils/dart_helper_utils.dart';
 
 class AttributeInfoEnum extends AttributeInfo {
   final List<String> values;
@@ -14,8 +14,11 @@ class AttributeInfoEnum extends AttributeInfo {
   });
 
   @override
+  String get name => generateClassName(raw.key);
+
+  @override
   Reference get typeReference =>
-      refer('${classReference.symbol}${raw.key.capitalizeFirstLetter}');
+      refer('${classReference.symbol}$name');
 
   @override
   Code get toJson =>
