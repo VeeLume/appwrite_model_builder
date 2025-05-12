@@ -191,10 +191,12 @@ Class model(CollectionInfo collectionInfo, String packageName) {
                   attribute.required || attribute.array
                       ? attribute.reference
                       : attribute.reference.nullable;
-              p.required = attribute.required || attribute.array;
+              p.required = attribute.required;
               p.defaultTo =
                   attribute.required && attribute.raw.defaultValue != null
                       ? attribute.defaultTo
+                      : attribute.array
+                      ? literalConstList([]).code
                       : null;
             }),
           ),
