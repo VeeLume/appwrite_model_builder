@@ -4,6 +4,8 @@ import 'package:appwrite_model_builder/src/collection_parser/attributes/enum.dar
 import 'package:appwrite_model_builder/src/collection_parser/collection_info.dart';
 import 'package:appwrite_model_builder/src/collections.dart';
 import 'package:appwrite_model_builder/src/model.dart';
+import 'package:appwrite_model_builder/src/provider.dart';
+import 'package:appwrite_model_builder/src/register_helper.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 
@@ -11,27 +13,63 @@ final DartFormatter formatter = DartFormatter(
   languageVersion: DartFormatter.latestShortStyleLanguageVersion,
 );
 
-List<(String, String)> generateModels(
-  List<dynamic> collections,
+List<(String, String)> generateProviders(
+  List<CollectionInfo> collections,
   String packageName,
 ) {
-  final Map<String, String> collectionIdToName = collections.fold(
-    <String, String>{},
-    (map, collection) =>
-        map
-          ..[collection['\$id'] as String] = toSingularPascalCase(
-            collection['name'] as String,
-          ),
-  );
+  final List<(String, String)> providers = [];
+  // Add generic list provider
+  providers.add((
+    'generic_list_provider',
+    formatter.format(
+      '${genericListProvider().accept(DartEmitter.scoped(useNullSafetySyntax: true))}',
+    ),
+  ));
 
+  // add auth provider
+  providers.add((
+    'auth_provider',
+    formatter.format(
+      '${authProvider().accept(DartEmitter.scoped(useNullSafetySyntax: true))}',
+    ),
+  ));
+
+  // add realtime subscription provider
+  providers.add((
+    'realtime_subscription',
+    formatter.format(
+      '${realtimeSubscriptions(packageName).accept(DartEmitter.scoped(useNullSafetySyntax: true))}',
+    ),
+  ));
+
+  // Add collection providers
+  for (final collection in collections) {
+    final lib = providerLibrary(
+      packageName,
+      refer(
+        toSingularPascalCase(collection.name),
+        'package:$packageName/models/${moduleName(collection.name)}.dart',
+      ),
+      collection.databaseId,
+      collection.$id,
+    );
+    providers.add((
+      moduleName(collection.name),
+      formatter.format(
+        '${lib.accept(DartEmitter.scoped(useNullSafetySyntax: true))}',
+      ),
+    ));
+  }
+
+  return providers;
+}
+
+List<(String, String)> generateModels(
+  List<CollectionInfo> collections,
+  String packageName,
+) {
   final List<(String, String)> models = [];
   for (final collection in collections) {
-    final collectionInfo = CollectionInfo.fromMap(
-      collection,
-      collectionIdToName,
-      packageName,
-    );
-
     final lib = Library((lib) {
       lib.body.addAll([
         Field((b) {
@@ -72,7 +110,7 @@ List<(String, String)> generateModels(
         }),
 
         // Add enums
-        for (final attribute in collectionInfo.attributes) ...[
+        for (final attribute in collection.attributes) ...[
           if (attribute is AttributeInfoEnum)
             Enum((e) {
               e.name = attribute.typeReference.symbol;
@@ -87,12 +125,12 @@ List<(String, String)> generateModels(
         ],
 
         // Add Class
-        model(collectionInfo, packageName),
+        model(collection, packageName),
       ]);
     });
 
     models.add((
-      moduleName(collectionInfo.name),
+      moduleName(collection.name),
       formatter.format(
         '${lib.accept(DartEmitter.scoped(useNullSafetySyntax: true))}',
       ),
@@ -138,6 +176,16 @@ String generateAppwriteClient(String packageName) {
 
     lib.body.addAll([appwriteClient(packageName)]);
   });
+  return formatter.format(
+    lib.accept(DartEmitter.scoped(useNullSafetySyntax: true)).toString(),
+  );
+}
+
+String generateRegisterHelper(
+  String packageName,
+  List<CollectionInfo> collections,
+) {
+  final lib = registerHelper(packageName, collections);
   return formatter.format(
     lib.accept(DartEmitter.scoped(useNullSafetySyntax: true)).toString(),
   );
