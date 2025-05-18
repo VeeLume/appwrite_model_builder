@@ -95,10 +95,7 @@ Library registerHelper(String packageName, List<CollectionInfo> collections) {
                         ],
                         {},
                         [
-                          refer(
-                            'AuthProvider',
-                            'package:$packageName/providers/auth_provider.dart',
-                          ),
+                          refer('T'),
                         ],
                       )
                       .code,
