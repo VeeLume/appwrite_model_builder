@@ -37,6 +37,11 @@ Library authProvider() {
             m.returns = refer('bool');
             m.type = MethodType.getter;
           }),
+          Method((m) {
+            m.name = 'build';
+            m.returns = refer('Future<void>');
+            m.modifier = MethodModifier.async;
+          }),
         ]);
       }),
     ]);

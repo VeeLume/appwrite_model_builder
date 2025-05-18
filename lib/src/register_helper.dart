@@ -84,6 +84,11 @@ Library registerHelper(String packageName, List<CollectionInfo> collections) {
                                         'auth',
                                       ).assign(refer('factory').call([])),
                                     );
+                                    b.addExpression(
+                                      refer(
+                                        'auth',
+                                      ).property('build').call([]).awaited,
+                                    );
                                     b.addExpression(refer('auth').returned);
                                   }),
                           ).closure,
