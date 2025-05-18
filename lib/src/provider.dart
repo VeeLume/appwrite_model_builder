@@ -53,6 +53,16 @@ Library realtimeSubscriptions(String packageName) {
     lib.body.addAll([
       Class((c) {
         c.name = 'RealtimeSubscriptions';
+        c.types.addAll([
+          TypeReference((b) {
+            b
+              ..symbol = 'T'
+              ..bound = refer(
+                'AuthProvider',
+                'package:$packageName/providers/auth_provider.dart',
+              );
+          }),
+        ]);
         c.fields.addAll([
           Field((b) {
             b.name = '_realtime';
@@ -258,10 +268,7 @@ Library realtimeSubscriptions(String packageName) {
                     'di',
                     'package:watch_it/watch_it.dart',
                   ).property('getAsync').call([], {}, [
-                    refer(
-                      'AuthProvider',
-                      'package:$packageName/providers/auth_provider.dart',
-                    ),
+                    refer('T'),
                   ]).awaited,
                 ),
               );

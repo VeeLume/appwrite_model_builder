@@ -104,6 +104,17 @@ Library registerHelper(String packageName, List<CollectionInfo> collections) {
         (b) =>
             b
               ..name = '_registerRealtimeProvider'
+              ..types.add(
+                TypeReference(
+                  (b) =>
+                      b
+                        ..symbol = 'T'
+                        ..bound = refer(
+                          'AuthProvider',
+                          'package:$packageName/providers/auth_provider.dart',
+                        ),
+                ),
+              )
               ..returns = refer('void')
               ..body =
                   refer('di', 'package:watch_it/watch_it.dart')
@@ -132,9 +143,14 @@ Library registerHelper(String packageName, List<CollectionInfo> collections) {
                                     );
                                     b.addExpression(
                                       declareFinal('subscriptions').assign(
-                                        refer(
-                                          'RealtimeSubscriptions',
-                                          'package:$packageName/providers/realtime_subscription.dart',
+                                        TypeReference(
+                                          (b) =>
+                                              b
+                                                ..symbol =
+                                                    'RealtimeSubscriptions'
+                                                ..url =
+                                                    'package:$packageName/providers/realtime_subscription.dart'
+                                                ..types.add(refer('T')),
                                         ).newInstance([refer('realtime')]),
                                       ),
                                     );
@@ -252,7 +268,14 @@ Library registerHelper(String packageName, List<CollectionInfo> collections) {
                           ..types.add(refer('T')),
                   ).call([refer('factory')]),
                 );
-                b.addExpression(refer('_registerRealtimeProvider').call([]));
+                b.addExpression(
+                  TypeReference(
+                    (b) =>
+                        b
+                          ..symbol = '_registerRealtimeProvider'
+                          ..types.add(refer('T')),
+                  ).call([]),
+                );
               }),
       ),
       Method(
