@@ -36,9 +36,13 @@ class AttributeInfoDateTime extends AttributeInfo {
                     .property('toList')
                     .call([]),
               )
+          : required
+          ? refer('data')
+              .index(literalString(name))
+              .assign(refer(name).property('toIso8601String').call([]))
           : refer('data')
               .index(literalString(name))
-              .assign(refer(name).property('toIso8601String'));
+              .assign(refer(name).nullSafeProperty('toIso8601String').call([]));
 
   @override
   Expression get fromAppwrite =>

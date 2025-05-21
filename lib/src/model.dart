@@ -32,38 +32,13 @@ String toSingularPascalCase(String input) {
           .toList();
 
   if (words.isEmpty) return '';
-
-  // Plural handling for the last word
-  final last = words.removeLast();
-  final singular = _toSingular(last);
-  final pascalWords = [...words.map(_capitalize), _capitalize(singular)];
+  final pascalWords = [...words.map(_capitalize)];
 
   return pascalWords.join();
 }
 
 String _capitalize(String word) =>
     word[0].toUpperCase() + word.substring(1).toLowerCase();
-
-String _toSingular(String plural) {
-  if (plural.endsWith('ies') && plural.length > 3) {
-    return '${plural.substring(0, plural.length - 3)}y';
-  }
-  if (plural.endsWith('ses') ||
-      plural.endsWith('xes') ||
-      plural.endsWith('zes')) {
-    return plural.substring(0, plural.length - 2);
-  }
-  if (plural.endsWith('s') && plural.length > 1) {
-    // Dictonary exceptions
-    final exceptions = ['status', 'species'];
-    if (exceptions.contains(plural)) {
-      return plural;
-    }
-
-    return plural.substring(0, plural.length - 1);
-  }
-  return plural;
-}
 
 Class model(CollectionInfo collectionInfo, String packageName) {
   final className = collectionInfo.name;
@@ -191,7 +166,7 @@ Class model(CollectionInfo collectionInfo, String packageName) {
                   attribute.required || attribute.array
                       ? attribute.reference
                       : attribute.reference.nullable;
-              p.required = attribute.required;
+              p.required = attribute.required && !attribute.array;
               p.defaultTo =
                   attribute.required && attribute.raw.defaultValue != null
                       ? attribute.defaultTo
