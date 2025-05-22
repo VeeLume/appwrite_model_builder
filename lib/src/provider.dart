@@ -133,26 +133,76 @@ Library realtimeSubscriptions(String packageName) {
                 });
               }),
             );
-            m.body = Code('''
-              _subscription?.close();
+            m.body = Block((b) {
+              b.addExpression(
+                refer('_subscription').nullSafeProperty('close').call([]),
+              );
+              b.statements.add(Code('if (_listeners.isEmpty) { return; }'));
+              b.addExpression(refer('_subscription').assign(refer('value')));
+              b.addExpression(
+                refer(
+                  '_subscription',
+                ).nullSafeProperty('stream').property('listen').call([
+                  Method((b) {
+                    b.requiredParameters.add(
+                      Parameter((p) => p..name = 'message'),
+                    );
+                    b.body = Block((bb) {
+                      bb.addExpression(
+                        declareFinal('messageChannels').assign(
+                          refer('Set').property('from').call([
+                            refer('message').property('channels'),
+                          ]),
+                        ),
+                      );
+                      bb.addExpression(
+                        declareFinal('intersection').assign(
+                          refer(
+                            'messageChannels',
+                          ).property('intersection').call([refer('channels')]),
+                        ),
+                      );
+                      bb.statements.add(
+                        Code('for (final channel in intersection) {'),
+                      );
+                      bb.addExpression(
+                        declareFinal('callbacks').assign(
+                          TypeReference((b) {
+                            b
+                              ..symbol = 'List'
+                              ..types.add(
+                                FunctionType((b) {
+                                  b
+                                    ..returnType = refer('void')
+                                    ..requiredParameters.add(
+                                      TypeReference((b) {
+                                        b
+                                          ..symbol = 'RealtimeMessage'
+                                          ..url =
+                                              'package:appwrite/appwrite.dart';
+                                      }),
+                                    );
+                                }),
+                              );
+                          }).property('from').call([
+                            refer('_listeners')
+                                .index(refer('channel'))
+                                .ifNullThen(literalList([])),
+                          ]),
+                        ),
+                      );
+                      bb.statements.add(
+                        Code('for (final callback in callbacks) {'),
+                      );
+                      bb.statements.add(Code('  callback(message);'));
+                      bb.statements.add(Code('}'));
+                      bb.statements.add(Code('}'));
 
-    if (_listeners.isEmpty) {
-      return;
-    }
-
-    _subscription = value;
-
-    _subscription?.stream.listen((message) {
-      final messageChannels = Set.from(message.channels);
-      final intersection = messageChannels.intersection(channels);
-
-      for (final channel in intersection) {
-        _listeners[channel]?.forEach((callback) {
-          callback(message);
-        });
-      }
-    });
-            ''');
+                    });
+                  }).closure,
+                ]),
+              );
+            });
           }),
           Method((m) {
             m.name = 'subscribe';
@@ -267,9 +317,7 @@ Library realtimeSubscriptions(String packageName) {
                   refer(
                     'di',
                     'package:watch_it/watch_it.dart',
-                  ).property('getAsync').call([], {}, [
-                    refer('T'),
-                  ]).awaited,
+                  ).property('getAsync').call([], {}, [refer('T')]).awaited,
                 ),
               );
               b.addExpression(
